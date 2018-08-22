@@ -22,7 +22,6 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -132,10 +131,10 @@ public class YCodec<T> implements Codec<T> {
             }
         } else if (bsonType == BsonType.DOCUMENT) {
             //对象或Map
-            if (fieldType instanceof ParameterizedTypeImpl) {
-                if (((ParameterizedTypeImpl) fieldType).getRawType() == Map.class) {
+            if (fieldType instanceof ParameterizedType) {
+                if (((ParameterizedType) fieldType).getRawType() == Map.class) {
                     //map
-                    return readMap((ParameterizedTypeImpl) fieldType, reader, decoderContext);
+                    return readMap((ParameterizedType) fieldType, reader, decoderContext);
                 } else {
                     throw new UnsupportedOperationException("");
                 }
@@ -164,7 +163,7 @@ public class YCodec<T> implements Codec<T> {
         return list;
     }
 
-    private Map<String, Object> readMap(ParameterizedTypeImpl fieldType, final BsonReader reader, final DecoderContext decoderContext) {
+    private Map<String, Object> readMap(ParameterizedType fieldType, final BsonReader reader, final DecoderContext decoderContext) {
         Type[] typeArguments = fieldType.getActualTypeArguments();
         Class<?> mapValueClass = null;
         if (typeArguments != null && typeArguments.length == 2) {
@@ -206,7 +205,7 @@ public class YCodec<T> implements Codec<T> {
             //尝试调用基本数据转换
             try {
                 value = SimpleTypeConverter.convert(value, fieldType);
-            }catch (Exception e) {
+            } catch (Exception e) {
                 //发生错误时
                 logger.error("当前值类型与字段类型不一致！当前值:{},{}", fieldType.getName(), READ_STATUS.get(), e);
             }
