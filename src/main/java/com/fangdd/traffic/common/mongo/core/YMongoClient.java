@@ -1,7 +1,8 @@
 package com.fangdd.traffic.common.mongo.core;
 
-import com.alibaba.fastjson.JSONObject;
 import com.fangdd.traffic.common.mongo.exceptions.YMongoException;
+import com.fangdd.traffic.common.mongo.utils.JacksonUtil;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -26,6 +27,8 @@ public class YMongoClient {
 
     private int maxWaitTime;
 
+    private String databaseName;
+
     /**
      * 获取某个数据库的连接
      *
@@ -40,7 +43,7 @@ public class YMongoClient {
         if (Strings.isNullOrEmpty(connections)) {
             throw new YMongoException("Mongodb Configure Error, config is null!");
         }
-        List<MongoConnectConf> connectConfigs = JSONObject.parseArray(connections, MongoConnectConf.class);
+        List<MongoConnectConf> connectConfigs = JacksonUtil.readValue(connections, new TypeReference<List<MongoConnectConf>>(){});
 
         if (connectConfigs == null || connectConfigs.isEmpty()) {
             throw new YMongoException("Mongodb Configure Error, can't parse Class MongoConnectConf!");
@@ -91,5 +94,13 @@ public class YMongoClient {
 
     public void setMaxWaitTime(int maxWaitTime) {
         this.maxWaitTime = maxWaitTime;
+    }
+
+    public String getDatabaseName() {
+        return databaseName;
+    }
+
+    public void setDatabaseName(String databaseName) {
+        this.databaseName = databaseName;
     }
 }

@@ -1,6 +1,5 @@
 package com.fangdd.traffic.common.mongo.reflection;
 
-import com.alibaba.fastjson.JSONObject;
 import com.fangdd.traffic.common.mongo.annotation.AutoIncrement;
 import com.fangdd.traffic.common.mongo.annotation.Ignore;
 import com.fangdd.traffic.common.mongo.exceptions.ReflenctionException;
@@ -8,6 +7,9 @@ import com.fangdd.traffic.common.mongo.reflection.dto.AutoIncrementInfo;
 import com.fangdd.traffic.common.mongo.reflection.dto.ClassMate;
 import com.fangdd.traffic.common.mongo.reflection.dto.FieldMate;
 import com.fangdd.traffic.common.mongo.reflection.dto.MethodMate;
+import com.fangdd.traffic.common.mongo.utils.JacksonUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +58,7 @@ public class ReflectionUtils {
         try {
             fieldMate.getField().set(target, value);
         } catch (IllegalAccessException e) {
-            logger.error("设置字段{}.{}出错! value={}", fieldMate.getClassMate().getClazz().getName(), fieldMate.getName(), JSONObject.toJSONString(value), e);
+            logger.error("设置字段{}.{}出错! value={}", fieldMate.getClassMate().getClazz().getName(), fieldMate.getName(), JacksonUtil.toJSon(value), e);
 //            throw new IllegalStateException("Unexpected reflection exception - " + ex.getClass().getName() + ": " + ex.getMessage());
             throw new ReflenctionException(e.getMessage(), e);
         }

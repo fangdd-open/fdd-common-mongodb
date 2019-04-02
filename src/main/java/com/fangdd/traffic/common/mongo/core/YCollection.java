@@ -1,11 +1,11 @@
 package com.fangdd.traffic.common.mongo.core;
 
-import com.alibaba.fastjson.JSONObject;
 import com.fangdd.traffic.common.mongo.annotation.AutoIncrement;
 import com.fangdd.traffic.common.mongo.codec.YCodec;
 import com.fangdd.traffic.common.mongo.reflection.ReflectionUtils;
 import com.fangdd.traffic.common.mongo.reflection.dto.AutoIncrementInfo;
 import com.fangdd.traffic.common.mongo.reflection.dto.ClassMate;
+import com.fangdd.traffic.common.mongo.utils.JacksonUtil;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -680,7 +680,7 @@ public abstract class YCollection<TDocument> {
             );
             if (params != null) {
                 for (Object param : params) {
-                    paramList.add(JSONObject.toJSONString(param));
+                    paramList.add(JacksonUtil.toJSon(param));
                 }
             }
 

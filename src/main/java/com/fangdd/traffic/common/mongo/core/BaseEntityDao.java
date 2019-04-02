@@ -333,4 +333,9 @@ public abstract class BaseEntityDao<T> extends YCollection<T> {
 
         return null;
     }
+
+    @Override
+    protected String getDatabaseName() {
+        return getYMongoClient().getDatabaseName();
+    }
 }
