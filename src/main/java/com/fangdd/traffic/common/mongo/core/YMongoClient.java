@@ -1,7 +1,8 @@
 package com.fangdd.traffic.common.mongo.core;
 
-import com.alibaba.fastjson.JSONObject;
 import com.fangdd.traffic.common.mongo.exceptions.YMongoException;
+import com.fangdd.traffic.common.mongo.utils.JacksonUtil;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -22,9 +23,11 @@ public class YMongoClient {
 
     private String connections;
 
-    private int connectionsPerHost;
+    private Integer connectionsPerHost;
 
-    private int maxWaitTime;
+    private Integer maxWaitTime;
+
+    private String databaseName;
 
     /**
      * 获取某个数据库的连接
@@ -40,17 +43,18 @@ public class YMongoClient {
         if (Strings.isNullOrEmpty(connections)) {
             throw new YMongoException("Mongodb Configure Error, config is null!");
         }
-        List<MongoConnectConf> connectConfigs = JSONObject.parseArray(connections, MongoConnectConf.class);
+        List<MongoConnectConf> connectConfigs = JacksonUtil.readValue(connections, new TypeReference<List<MongoConnectConf>>(){});
 
         if (connectConfigs == null || connectConfigs.isEmpty()) {
             throw new YMongoException("Mongodb Configure Error, can't parse Class MongoConnectConf!");
         }
         List<ServerAddress> serverAddresses = Lists.newArrayList();
-        List<MongoCredential> credentials = Lists.newArrayList();
+        MongoCredential mongoCredential = null;
         for (MongoConnectConf config : connectConfigs) {
             serverAddresses.add(new ServerAddress(config.getHost(), config.getPort()));
-            if (!Strings.isNullOrEmpty(config.getUser()) && !Strings.isNullOrEmpty(config.getPassword())) {
-                credentials.add(MongoCredential.createScramSha1Credential(config.getUser(), database, config.getPassword().toCharArray()));
+            boolean hasCredentialInfo = !Strings.isNullOrEmpty(config.getUser()) && !Strings.isNullOrEmpty(config.getPassword());
+            if (hasCredentialInfo && mongoCredential == null) {
+                mongoCredential = MongoCredential.createScramSha1Credential(config.getUser(), database, config.getPassword().toCharArray());
             }
         }
         MongoClientOptions clientOptions = new MongoClientOptions
@@ -60,10 +64,10 @@ public class YMongoClient {
                 .build();
 
         MongoClient client;
-        if (credentials.isEmpty()) {
+        if (mongoCredential == null) {
             client = new MongoClient(serverAddresses, clientOptions);
         } else {
-            client = new MongoClient(serverAddresses, credentials, clientOptions);
+            client = new MongoClient(serverAddresses, mongoCredential, clientOptions);
         }
         CLIENTS.put(database, client);
         return client;
@@ -77,19 +81,27 @@ public class YMongoClient {
         this.connections = connections;
     }
 
-    public int getConnectionsPerHost() {
+    public Integer getConnectionsPerHost() {
         return connectionsPerHost;
     }
 
-    public void setConnectionsPerHost(int connectionsPerHost) {
+    public void setConnectionsPerHost(Integer connectionsPerHost) {
         this.connectionsPerHost = connectionsPerHost;
     }
 
-    public int getMaxWaitTime() {
+    public Integer getMaxWaitTime() {
         return maxWaitTime;
     }
 
-    public void setMaxWaitTime(int maxWaitTime) {
+    public void setMaxWaitTime(Integer maxWaitTime) {
         this.maxWaitTime = maxWaitTime;
+    }
+
+    public String getDatabaseName() {
+        return databaseName;
+    }
+
+    public void setDatabaseName(String databaseName) {
+        this.databaseName = databaseName;
     }
 }
