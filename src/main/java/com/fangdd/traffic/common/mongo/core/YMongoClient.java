@@ -29,6 +29,8 @@ public class YMongoClient {
 
     private String databaseName;
 
+    private String databaseName;
+
     /**
      * 获取某个数据库的连接
      *
