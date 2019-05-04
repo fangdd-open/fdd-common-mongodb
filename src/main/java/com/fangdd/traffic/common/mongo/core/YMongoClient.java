@@ -19,15 +19,13 @@ import java.util.Map;
  * @date 15/8/27
  */
 public class YMongoClient {
-    private static Map<String, MongoClient> CLIENTS = Maps.newConcurrentMap();
+    private static final Map<String, MongoClient> CLIENTS = Maps.newConcurrentMap();
 
     private String connections;
 
     private Integer connectionsPerHost;
 
     private Integer maxWaitTime;
-
-    private String databaseName;
 
     private String databaseName;
 

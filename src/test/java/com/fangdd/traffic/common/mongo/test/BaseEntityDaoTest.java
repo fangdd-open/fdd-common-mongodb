@@ -16,6 +16,7 @@ import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -39,6 +40,7 @@ public class BaseEntityDaoTest extends BaseJunitTest {
 
         House house2 = houseDao.getEntityById(423584, Projections.include("basicInfo", "location"));
         System.out.println(house2.getBasicInfo().getHouseName());
+
     }
 
     @Test

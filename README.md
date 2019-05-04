@@ -1,6 +1,17 @@
 # fdd-common-mongodb
 
-fdd-common-mongodb是对mongodb-java-driver的一层封装。主要是实现了自动识别的CodeC，让使用者可以直接通过Pojo类操作mongodb
+fdd-common-mongodb是对mongodb-java-driver的一层封装。主要扩展了：
+
+1. 实现了自动识别的CodeC，让使用者可以直接通过Pojo类操作mongodb（ORM功能）
+
+2. 支持自增ID，会自动在添加一个collection，名称为counter，用于计数
+
+3. 实现了一些safeUpdate / getEntityById等便捷方法
+
+4. 实现了一些属性注解，用于控制字段是否可写、可读等
+
+除了增加的一些方法外，大部分的官方驱动都直接暴露出去，可直接调用
+
 
 ## 使用
 
@@ -57,5 +68,11 @@ public class ArticleDao extends ArticleEntityDao<Article> {
 ```java
 @Autowired
 private ArticleDao articleDao;
+
+@Test
+public void getById() {
+    Article article = articleDao.getEntityById(423584L);
+    Assert.assertEquals("测试文章", article.getTitle());
+} 
 
 ```
