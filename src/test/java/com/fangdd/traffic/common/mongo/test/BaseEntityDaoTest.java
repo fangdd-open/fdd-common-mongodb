@@ -1,13 +1,13 @@
 package com.fangdd.traffic.common.mongo.test;
 
+import com.fangdd.traffic.common.mongo.BaseJunitTest;
+import com.fangdd.traffic.common.mongo.MongoConverter;
 import com.fangdd.traffic.common.mongo.dao.House2Dao;
 import com.fangdd.traffic.common.mongo.dao.HouseDao;
-import com.fangdd.traffic.common.mongo.MongoConverter;
 import com.fangdd.traffic.common.mongo.pojo.house.House;
 import com.fangdd.traffic.common.mongo.pojo.house.House2;
 import com.fangdd.traffic.common.mongo.pojo.house.HouseBasicInfo;
 import com.google.common.collect.Lists;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
@@ -16,7 +16,6 @@ import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

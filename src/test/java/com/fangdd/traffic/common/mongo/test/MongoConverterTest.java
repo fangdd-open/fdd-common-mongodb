@@ -1,5 +1,6 @@
 package com.fangdd.traffic.common.mongo.test;
 
+import com.fangdd.traffic.common.mongo.BaseJunitTest;
 import com.fangdd.traffic.common.mongo.dao.HouseDao;
 import com.fangdd.traffic.common.mongo.MongoConverter;
 import com.fangdd.traffic.common.mongo.pojo.house.House;
@@ -23,7 +24,7 @@ public class MongoConverterTest extends BaseJunitTest{
         Document doc = MongoConverter.toDocument(house);
 
         House house2 = MongoConverter.toEntity(doc, House.class);
-        assertEquals(house, house2);
+        Assert.assertEquals(house, house2);
     }
 
     /**

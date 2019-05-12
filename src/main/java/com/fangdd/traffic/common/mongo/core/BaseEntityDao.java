@@ -17,6 +17,8 @@ import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -30,6 +32,8 @@ import java.util.Map;
 public abstract class BaseEntityDao<T> extends YCollection<T> {
     public static UpdateOptions UPSERT_UPDATE_OPTIONS = new UpdateOptions();
 
+    private YMongoClient mongoClient;
+
     private Class<T> classType;
 
     static {
@@ -37,6 +41,27 @@ public abstract class BaseEntityDao<T> extends YCollection<T> {
     }
 
     public static final String ID = "_id";
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    /**
+     * 在spring中注册的YMongoClient类名称
+     *
+     * @return
+     */
+    protected abstract String getMongoClientName();
+
+    @Override
+    protected YMongoClient getYMongoClient() {
+        if (mongoClient != null) {
+            return mongoClient;
+        }
+        if (applicationContext != null) {
+            mongoClient = applicationContext.getBean(getMongoClientName(), YMongoClient.class);
+        }
+        return mongoClient;
+    }
 
     /**
      * 通过ID进行修改
@@ -204,6 +229,7 @@ public abstract class BaseEntityDao<T> extends YCollection<T> {
 
     /**
      * 通过IDs获取记录，返回的记录按ids的顺序返回
+     *
      * @param ids
      * @param <IDType>
      * @return
@@ -320,14 +346,14 @@ public abstract class BaseEntityDao<T> extends YCollection<T> {
 
     @Override
     protected Class<T> getDocumentClass() {
-        if(classType != null) {
+        if (classType != null) {
             return classType;
         }
         Type t = getClass().getGenericSuperclass();
 
-        if(t instanceof ParameterizedType){
-            Type[] p = ((ParameterizedType)t).getActualTypeArguments();
-            classType = (Class<T>)p[0];
+        if (t instanceof ParameterizedType) {
+            Type[] p = ((ParameterizedType) t).getActualTypeArguments();
+            classType = (Class<T>) p[0];
             return classType;
         }
 

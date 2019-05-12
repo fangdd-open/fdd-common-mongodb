@@ -1,5 +1,6 @@
 package com.fangdd.traffic.common.mongo.test;
 
+import com.fangdd.traffic.common.mongo.BaseJunitTest;
 import com.fangdd.traffic.common.mongo.dao.UserInfoDao;
 import com.fangdd.traffic.common.mongo.pojo.UserInfo;
 import org.junit.Test;

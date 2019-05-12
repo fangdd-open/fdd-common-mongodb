@@ -1,5 +1,6 @@
 package com.fangdd.traffic.common.mongo.test;
 
+import com.fangdd.traffic.common.mongo.BaseJunitTest;
 import com.fangdd.traffic.common.mongo.dao.House2Dao;
 import com.fangdd.traffic.common.mongo.dao.HouseDao;
 import com.fangdd.traffic.common.mongo.pojo.house.House;
