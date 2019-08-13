@@ -18,9 +18,9 @@ fdd-common-mongodb是对mongodb-java-driver的一层封装。主要扩展了：
 1. 添加依赖
 ```xml
 <dependency>
-    <groupId>com.fangdd.traffic</groupId>
+    <groupId>com.fangdd</groupId>
     <artifactId>common-mongodb</artifactId>
-    <version>2.5.2-SNAPSHOT</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 
