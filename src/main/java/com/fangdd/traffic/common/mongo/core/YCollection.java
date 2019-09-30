@@ -8,7 +8,6 @@ import com.fangdd.traffic.common.mongo.reflection.dto.ClassMate;
 import com.fangdd.traffic.common.mongo.utils.JacksonUtil;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.mongodb.MongoClient;
 import com.mongodb.bulk.BulkWriteResult;
 import com.mongodb.client.*;
@@ -26,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by ycoe on 17/1/19.
@@ -36,10 +34,11 @@ public abstract class YCollection<TDocument> {
 
     protected static final long SLOW_QUERY_TIME = 800;
 
-    private static final Map<String, MongoCollection> COLLECTION_MAP = Maps.newConcurrentMap();
     private static final String SEQ = "seq";
     private static final String COUNTERS = "counters";
     private static final String ID = "_id";
+
+    private static final ThreadLocal<MongoClient> THREAD_LOCAL_CONNECT_CLIENT = new ThreadLocal<>();
 
     /**
      * 获取数据库名称
@@ -694,11 +693,11 @@ public abstract class YCollection<TDocument> {
             return MongoClient.getDefaultCodecRegistry();
         }
 
-        logger.info("codec regist: {}", registryClass.getName());
+//        logger.info("codec regist: {}", registryClass.getName());
         ClassMate classMate = ReflectionUtils.getClassMate(registryClass);
         List<CodecRegistry> codecRegistryList = Lists.newArrayList();
         classMate.getReferClassList().forEach(clazz -> {
-            logger.info("codec regist: \t{}", clazz.getName());
+//            logger.info("codec regist: \t{}", clazz.getName());
             CodecRegistry codecProvider = CodecRegistries.fromProviders(new CodecProvider() { // NOSONAR
                 @Override
                 public <D> Codec<D> get(Class<D> clazz, CodecRegistry registry) {
@@ -719,6 +718,14 @@ public abstract class YCollection<TDocument> {
         return codecRegistry;
     }
 
+    public String getConnectPoint() {
+        MongoClient mongoClient = THREAD_LOCAL_CONNECT_CLIENT.get();
+        if (mongoClient == null) {
+            return null;
+        }
+        return mongoClient.getConnectPoint();
+    }
+
     /**
      * 获取一个MongoDB的Collection连接
      *
@@ -733,16 +740,11 @@ public abstract class YCollection<TDocument> {
     }
 
     public <NewDocument> MongoCollection<NewDocument> getDocumentMongoCollection(String databaseName, String collectionName, Class<NewDocument> clazz) {
-        String key = databaseName + "." + collectionName + ":" + (clazz == null ? "null" : clazz.getName());
-        MongoCollection<NewDocument> collection = COLLECTION_MAP.get(key);
-        if (collection == null) {
-            MongoClient client = getYMongoClient().getClient(databaseName);
-            collection = (MongoCollection<NewDocument>) client.getDatabase(databaseName).getCollection(collectionName);
-            if (clazz != null) {
-                collection = collection.withDocumentClass(clazz).withCodecRegistry(getCodecRegistry(clazz));
-            }
-            COLLECTION_MAP.put(key, collection);
-            return collection;
+        MongoClient client = getYMongoClient().getClient(databaseName);
+        THREAD_LOCAL_CONNECT_CLIENT.set(client);
+        MongoCollection<NewDocument> collection = (MongoCollection<NewDocument>) client.getDatabase(databaseName).getCollection(collectionName);
+        if (clazz != null) {
+            collection = collection.withDocumentClass(clazz).withCodecRegistry(getCodecRegistry(clazz));
         }
         return collection;
     }
