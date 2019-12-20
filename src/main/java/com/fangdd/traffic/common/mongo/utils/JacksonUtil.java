@@ -2,10 +2,11 @@ package com.fangdd.traffic.common.mongo.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.MongoClient;
+import org.bson.BsonDocument;
+import org.bson.conversions.Bson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * @author xuwenzhen
@@ -14,7 +15,9 @@ import java.util.List;
 public class JacksonUtil {
     private static final Logger logger = LoggerFactory.getLogger(JacksonUtil.class);
     private static ObjectMapper objectMapper;
-    private JacksonUtil(){}
+
+    private JacksonUtil() {
+    }
 
     /**
      * 使用泛型方法，把json字符串转换为相应的JavaBean对象。
@@ -72,6 +75,10 @@ public class JacksonUtil {
             objectMapper = new ObjectMapper();
         }
 
+        if (object instanceof Bson) {
+            BsonDocument asBsonDocument = ((Bson) object).toBsonDocument(BsonDocument.class, MongoClient.getDefaultCodecRegistry());
+            return asBsonDocument.toJson();
+        }
         try {
             return objectMapper.writeValueAsString(object);
         } catch (Exception e) {

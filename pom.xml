@@ -8,7 +8,7 @@
     <artifactId>common-mongodb</artifactId>
     <name>common-mongodb</name>
     <description>对mongodb-java-driver的封装，提供了YCodec实现，可用于普通POJO类编码、解码</description>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 
     <licenses>
         <license>
